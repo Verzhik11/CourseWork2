@@ -20,12 +20,12 @@ public class JavaQuestionService implements QuestionService {
     @Override
     public Question add(String question, String answer) {
         Question newQuestion = new Question(question, answer);
+        if (newQuestion.getQuestion() == null || newQuestion.getAnswer() == null) {
+            throw new QuestionsDataIsNull("Какие-то параметры не переданы");
+        }
         boolean a = checkLetters(newQuestion);
         if (!a) {
             throw new IsNotUniqueException("Некорректные данные");
-        }
-        if (newQuestion.getQuestion() == null || newQuestion.getAnswer() == null) {
-            throw new QuestionsDataIsNull("Какие-то параметры не переданы");
         }
         questions.add(newQuestion);
         return newQuestion;
@@ -61,7 +61,7 @@ public class JavaQuestionService implements QuestionService {
         String answer = StringUtils.capitalize(alphabetQuestion);
         return new Question(question, answer);
     }
-    public boolean checkLetters (Question question) {
+    private boolean checkLetters (Question question) {
         return StringUtils.isAlpha(question.getQuestion());
     }
 

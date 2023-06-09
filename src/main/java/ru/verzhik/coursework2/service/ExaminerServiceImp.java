@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class ExaminerServiceImp implements ExaminerService{
-    Random random;
     QuestionService questionService;
 
     public ExaminerServiceImp(QuestionService questionService) {
