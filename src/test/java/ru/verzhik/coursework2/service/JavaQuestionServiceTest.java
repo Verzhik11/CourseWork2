@@ -11,6 +11,7 @@ import ru.verzhik.coursework2.domain.Question;
 import ru.verzhik.coursework2.exception.IsNotUniqueException;
 import ru.verzhik.coursework2.exception.QuestionsDataIsNull;
 
+import java.util.HashSet;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,6 +30,7 @@ class JavaQuestionServiceTest {
 
     @AfterEach
     void tearDown() {
+        new HashSet<>(out.getAll()).forEach(out::remove);
     }
 
     @Test
@@ -96,8 +98,13 @@ class JavaQuestionServiceTest {
 
     @Test
     void getRandomQuestion() {
-        Question question = out.getRandomQuestion();
-        Assertions.assertThat(question.getQuestion()).contains("?");
+        Assertions.assertThat(out.getRandomQuestion()).isIn(out.getAll());
+    }
+
+    @Test
+    void getRandomQuestionIsEmpty() {
+        tearDown();
+        Assertions.assertThatExceptionOfType(QuestionsDataIsNull.class).isThrownBy(() -> out.getRandomQuestion());
     }
 
     @Test
