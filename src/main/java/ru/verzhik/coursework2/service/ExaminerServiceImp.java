@@ -9,8 +9,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class ExaminerServiceImp implements ExaminerService{
-    Random random;
-    QuestionService questionService;
+    private final QuestionService questionService;
 
     public ExaminerServiceImp(QuestionService questionService) {
         this.questionService = questionService;
@@ -18,6 +17,17 @@ public class ExaminerServiceImp implements ExaminerService{
 
     @Override
     public Collection<Question> getQuestions(int amount) {
+        if (amount <= 0 || amount > questionService.getAll().size()) {
+            throw new StorageIsFullException("Превышено кол-во запросов");
+        }
+        Set<Question> questionSet = new HashSet<>();
+        while (questionSet.size() < amount) {
+            questionSet.add(questionService.getRandomQuestion());
+        }
+        return questionSet;
+    }
+
+    /*public Collection<Question> getQuestions(int amount) {
         Set<Question> questionSet = new HashSet<>();
         int Limit = 5;
         if (amount >= Limit) {
@@ -28,5 +38,5 @@ public class ExaminerServiceImp implements ExaminerService{
         }
 
         return questionSet;
-    }
+    }*/
 }
