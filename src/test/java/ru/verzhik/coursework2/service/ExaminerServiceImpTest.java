@@ -25,33 +25,41 @@ import static org.mockito.Mockito.when;
 class ExaminerServiceImpTest {
     @Mock
     private JavaQuestionService javaQuestionService;
+    @Mock
+    private MathQuestionService mathQuestionService;
     @InjectMocks
     private ExaminerServiceImp out;
     private final Collection<Question> questions = Set.of(new Question("Aaaa?", "Aaaa"),
-            new Question("Bbbb?", "Bbbb"),
-            new Question("Eeee?", "Eeee"));
+            new Question("Bbbb?", "Bbbb"));
+    private final Collection<Question> mathQuestions = Set.of(new Question("3+3", "6"),
+            new Question("2+2", "4"));
 
     @Test
     void getQuestionFullorNullTest() {
         when(javaQuestionService.getAll()).thenReturn(questions);
+        when(mathQuestionService.getAll()).thenReturn(mathQuestions);
 
         assertThatExceptionOfType(StorageIsFullException.class)
                 .isThrownBy(() -> out.getQuestions(-1));
         assertThatExceptionOfType(StorageIsFullException.class)
-                .isThrownBy(() -> out.getQuestions(questions.size() + 1));
+                .isThrownBy(() -> out.getQuestions(questions.size() + mathQuestions.size() + 1));
     }
 
     @Test
     void getQuestionsTest() {
        when(javaQuestionService.getAll()).thenReturn(questions);
+       when(mathQuestionService.getAll()).thenReturn(mathQuestions);
        when(javaQuestionService.getRandomQuestion()).thenReturn(new Question("Aaaa?", "Aaaa"),
-               new Question("Bbbb?", "Bbbb"),
-               new Question("Eeee?", "Eeee"));
-        org.assertj.core.api.Assertions.assertThat(out.getQuestions(3)).hasSize(3)
-                        .containsExactlyInAnyOrder(new Question("Eeee?", "Eeee"),
+               new Question("Bbbb?", "Bbbb"));
+       when(mathQuestionService.getRandomQuestion()).thenReturn(new Question("3+3", "6"),
+               new Question("2+2", "4"));
+        org.assertj.core.api.Assertions.assertThat(out.getQuestions(4)).hasSize(4)
+                        .containsExactlyInAnyOrder(new Question("Aaaa?", "Aaaa"),
                                 new Question("Bbbb?", "Bbbb"),
-                                new Question("Aaaa?", "Aaaa"));
-        Mockito.verify(javaQuestionService, Mockito.times(3)).getRandomQuestion();
+                                new Question("3+3", "6"),
+                                new Question("2+2", "4"));
+
+        Mockito.verify(javaQuestionService, Mockito.times(2)).getRandomQuestion();
 
     }
 }
